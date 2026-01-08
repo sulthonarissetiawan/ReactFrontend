@@ -1,74 +1,93 @@
-import React from "react";
+import React, { useState } from "react";
 
 function Login() {
-    return (
-        <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4 font-sans">
-        <div className="w-full max-w-md border border-gray-200 rounded-lg p-8 shadow-sm">
-            <h2 className="text-center text-2xl font-bold mb-6 text-black">
-                Masuk SIVENTA
-            </h2>
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-            {/* Google Button */}
-            <div className="flex justify-start">
-                <button className="w-1/2 flex items-center justify-center gap-2 py-2.5 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors cursor-pointer text-sm font-medium">
-                    <img
-                        src="https://www.svgrepo.com/show/475656/google-color.svg"
-                        alt="google"
-                        className="w-5 h-5"
-                    />
-                    <span className="truncate text-black">Sign in with Google</span>
-                </button>
-            </div>
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-            {/* Divider */}
-            <div className="text-center my-6">
-            <span className="text-black text-sm">atau masuk</span>
-            </div>
+    try {
+      const response = await fetch("http://103.63.25.222/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
+      });
 
-            <div className="space-y-4">
-            <input
-                type="text"
-                placeholder="Email / Username"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#991B1F] focus:border-transparent outline-none transition-all"
-            />
+      const data = await response.json();
 
-            <input
-                type="password"
-                placeholder="Password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-[#991B1F] focus:border-transparent outline-none transition-all"
-            />
-            </div>
+      if (!response.ok) {
+        throw new Error(data.message || "Login gagal");
+      }
 
-            <div className="flex items-center gap-2 mt-4 mb-6">
-            <input 
-                type="checkbox" 
-                className="w-4 h-4 rounded border-gray-300 accent-[#991B1F] focus:ring-[#991B1F]" 
-            />
-            <span className="text-sm text-gray-600">Tetap masuk</span>
-            </div>
+      // ✅ SIMPAN TOKEN & USER
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
 
-            {/* Tombol Masuk */}
-            <button className="w-full py-3 bg-[#991B1F] hover:opacity-90 text-white font-semibold rounded-lg transition-all shadow-md active:scale-[0.98]">
-            Masuk
-            </button>
+      alert(data.message);
 
-            {/* Link Lupa Kata Sandi */}
-            <div className="mt-4">
-            <a href="#" className="text-sm text-[#991B1F] hover:underline">
-                Lupa kata sandi?
-            </a>
-            </div>
+      // redirect setelah login
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4">
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-md border border-gray-200 rounded-lg p-8 shadow-sm"
+      >
+        <h2 className="text-center text-2xl font-bold mb-6 text-black">
+          Masuk SIVENTA
+        </h2>
+
+        <div className="space-y-4">
+          <input
+            type="text"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg"
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="w-full px-4 py-3 border rounded-lg"
+            required
+          />
         </div>
 
-        {/* Link Daftar */}
-        <p className="mt-8 text-sm text-gray-600">
-            Belum punya akun?{" "}
-            <span className="text-[#991B1F] cursor-pointer hover:underline">
-            Daftar dong Bestie
-            </span>
-        </p>
-        </div>
-    );
+        {error && (
+          <p className="mt-4 text-sm text-red-600">{error}</p>
+        )}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-6 py-3 bg-[#991B1F] text-white font-semibold rounded-lg"
+        >
+          {loading ? "Memproses..." : "Masuk"}
+        </button>
+      </form>
+    </div>
+  );
 }
 
 export default Login;
