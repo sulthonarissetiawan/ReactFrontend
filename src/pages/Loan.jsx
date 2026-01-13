@@ -100,7 +100,7 @@ const Loan = () => {
                             <span className="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Menunggu
                         </span>
                         <h4 className="text-[11px] font-bold text-gray-800 mt-1">Kamera Canon D1200</h4>
-                        <p className="text-[9px] text-gray-400 mt-0.5 italic">Hingga 25 Des 2025</p>
+                        <p className="text-[9px] text-gray-400 mt-0.5">Hingga 25 Desember 2025</p>
                         </div>
                     </div>
 
@@ -120,11 +120,11 @@ const Loan = () => {
                     <div className="grid grid-cols-2 gap-2 mb-4">
                         <div className="bg-gray-100 p-2 rounded-lg text-center">
                             <p className="text-[8px] text-gray-400 uppercase font-bold">Pinjam</p>
-                            <p className="text-[9px] font-bold text-gray-700">23 Des</p>
+                            <p className="text-[9px] font-bold text-gray-700">23 Desember 2025</p>
                         </div>
                         <div className="bg-red-50 p-2 rounded-lg border border-red-100 text-center">
                             <p className="text-[8px] text-red-400 uppercase font-bold">Deadline</p>
-                            <p className="text-[9px] font-bold text-red-600">24 Des</p>
+                            <p className="text-[9px] font-bold text-red-600">24 Desember 2025</p>
                         </div>
                     </div>
                     <button className="w-full py-2 bg-[#991B1F] text-white text-[10px] rounded-lg font-bold uppercase tracking-wide">

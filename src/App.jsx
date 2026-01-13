@@ -9,6 +9,9 @@ import Profile from './pages/Profile';
 import Help from './pages/Help';
 
 import HomeAdmin from './pages/admin/Home';
+import ManageAsset from './pages/admin/ManageAsset';
+import Borrow from './pages/admin/Borrow';
+import Report from './pages/admin/Report';
 
 function App() {
     return (
@@ -21,7 +24,10 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/help" element={<Help />} />
                 
-                <Route path="/admin/home" element={<HomeAdmin />} />
+                <Route path="/admin" element={<HomeAdmin />} />
+                <Route path="/admin/manage-asset" element={<ManageAsset />} />
+                <Route path="/admin/borrow" element={<Borrow />} />
+                <Route path="/admin/report" element={<Report />} />
             </Routes>
         </Router>
     );
