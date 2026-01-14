@@ -29,10 +29,10 @@ const Navbar = () => {
 
             {/* Menu Navigasi Desktop */}
             <div className="hidden md:flex gap-8 text-sm font-semibold text-gray-700">
-            <Link to="/" className="hover:text-[#991B1F] transition-colors">Beranda</Link>
-            <Link to="/item-data" className="hover:text-[#991B1F] transition-colors">Data Barang</Link>
-            <Link to="/loan" className="hover:text-[#991B1F] transition-colors">Peminjaman</Link>
-            <Link to="/profile" className="hover:text-[#991B1F] transition-colors">Profile</Link>
+                <Link to="/employee" className="hover:text-[#991B1F] transition-colors">Beranda</Link>
+                <Link to="/item-data" className="hover:text-[#991B1F] transition-colors">Data Barang</Link>
+                <Link to="/loan" className="hover:text-[#991B1F] transition-colors">Peminjaman</Link>
+                <Link to="/profile" className="hover:text-[#991B1F] transition-colors">Profile</Link>
             </div>
 
             {/* Hamburger Button (Mobile Only) */}
