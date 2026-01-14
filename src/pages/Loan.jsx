@@ -38,7 +38,7 @@ const Loan = () => {
     <div className="flex flex-col min-h-screen bg-[#FDFDFD]">
       <Navbar />
 
-      <main className="flex-grow max-w-7xl mx-auto w-full px-4 md:px-12 py-6 md:py-10">
+      <main className="grow max-w-7xl mx-auto w-full px-4 md:px-12 py-6 md:py-10">
         <header className="mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
             Peminjaman Aset
@@ -156,7 +156,7 @@ const Loan = () => {
                       Kamera Canon D1200
                     </h4>
                     <p className="text-[9px] text-gray-400 mt-0.5 italic">
-                      Hingga 25 Des 2025
+                      Hingga 25 Desember 2025
                     </p>
                   </div>
                 </div>
@@ -188,7 +188,7 @@ const Loan = () => {
                         Pinjam
                       </p>
                       <p className="text-[9px] font-bold text-gray-700">
-                        23 Des
+                        23 Desember 2025
                       </p>
                     </div>
                     <div className="bg-red-50 p-2 rounded-lg border border-red-100 text-center">
@@ -196,7 +196,7 @@ const Loan = () => {
                         Deadline
                       </p>
                       <p className="text-[9px] font-bold text-red-600">
-                        24 Des
+                        24 Desember 2025
                       </p>
                     </div>
                   </div>

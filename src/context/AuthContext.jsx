@@ -11,6 +11,9 @@ export const AuthProvider = ({ children }) => {
     localStorage.getItem("token")
   );
 
+  // =============================
+  // FUNGSI LOGIN
+  // =============================
   const login = async (email, password) => {
     const response = await api.post("/login", {
       email,
@@ -26,15 +29,46 @@ export const AuthProvider = ({ children }) => {
     setUser(user);
   };
 
+  // =============================
+  // FUNGSI REGISTER
+  // =============================
+  const register = async (userData) => {
+    try {
+      // Menyesuaikan dengan data yang dikirim dari Register.js
+      // Backend biasanya butuh: name, email, password, password_confirmation
+      const response = await api.post("/register", userData);
+      return response.data;
+    } catch (error) {
+      // Re-throw error agar bisa ditangkap oleh catch di Register.js
+      throw error;
+    }
+  };
+
+  // =============================
+  // FUNGSI RESET PASSWORD
+  // =============================
+  const resetPassword = async (email, password, password_confirmation) => {
+    try {
+      const response = await api.post("/reset-password", {
+        email,
+        password,
+        password_confirmation,
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  // =============================
+  // FUNGSI LOGOUT
+  // =============================
   const logout = async () => {
     try {
-      // HIT ENDPOINT LOGOUT (REVOKE TOKEN)
       await api.post("/logout");
     } catch (error) {
-      // Tidak menghentikan logout jika API gagal
       console.warn("Logout API gagal:", error);
     } finally {
-      // BERSIHKAN CLIENT
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
@@ -44,7 +78,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    // JANGAN LUPA: Tambahkan 'register' ke dalam value Provider
+    <AuthContext.Provider value={{ user, token, login, logout, register, resetPassword }}>
       {children}
     </AuthContext.Provider>
   );

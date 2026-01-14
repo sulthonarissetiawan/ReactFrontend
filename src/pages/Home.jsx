@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import api from "../services/api"; // axios instance
+import api from "../services/api"; // Pastikan path axios instance benar
 
 const Home = () => {
   // =============================
@@ -11,7 +11,7 @@ const Home = () => {
   const [totalItems, setTotalItems] = useState(0);
   const [loading, setLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState("");
 
   // =============================
   // FETCH DATA
@@ -21,17 +21,17 @@ const Home = () => {
       try {
         setLoading(true);
 
-        // PARALLEL REQUEST (BEST PRACTICE)
+        // Mengambil data secara paralel agar lebih cepat
         const [loanRes, itemRes, userRes] = await Promise.all([
           api.get("/loans"),
           api.get("/items"),
           api.get("/me"),
         ]);
 
-        // MAP DATA PINJAMAN (TIDAK UBAH TAMPILAN)
+        // Mapping data pinjaman dari API
         const mappedLoans = loanRes.data.data.map((item) => ({
-          nama: `Peminjaman oleh ${item.user.name}`,
-          jumlah: 1,
+          nama: `Peminjaman oleh ${item.user?.name || "User"}`,
+          jumlah: 1, // atau item.qty jika ada di API
           masuk: item.loan_date,
           tenggat: item.return_date ?? "-",
           status: item.status === "dipinjam" ? "Aktif" : "Selesai",
@@ -51,11 +51,14 @@ const Home = () => {
   }, []);
 
   // =============================
-  // DERIVED DATA
+  // LOGIKA TAMPILAN (DERIVED STATE)
   // =============================
   const pinjamanAktif = dataPinjaman.filter((item) => item.status === "Aktif");
+  
+  // Menentukan berapa data yang muncul (Limit 3)
+  const limit = 3;
+  const displayedData = showAll ? dataPinjaman : dataPinjaman.slice(0, limit);
 
-  const displayedData = showAll ? dataPinjaman : dataPinjaman.slice(0, 3);
   // =============================
   // RENDER
   // =============================
@@ -63,11 +66,11 @@ const Home = () => {
     <div className="min-h-screen bg-white font-sans flex flex-col">
       <Navbar />
 
-      <main className="max-w-7xl mx-auto w-full px-4 md:px-12 py-6 md:py-10">
+      <main className="grow max-w-7xl mx-auto w-full px-4 md:px-12 py-6 md:py-10">
         {/* Header Welcome */}
         <section className="mb-8 md:mb-10 text-center md:text-left">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800">
-            Selamat Siang, {user}!
+            Selamat Siang, {loading ? "..." : user}!
           </h1>
           <p className="text-gray-500 text-xs md:text-sm">
             Temukan barang dan ringkasan status inventaris anda
@@ -78,18 +81,18 @@ const Home = () => {
         <section className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-10 md:mb-14">
           <StatCard
             title="Jumlah Barang"
-            value={totalItems}
+            value={loading ? "..." : totalItems}
             subValue="Tersedia"
           />
           <StatCard
             title="Status Pinjaman"
-            value={pinjamanAktif.length}
+            value={loading ? "..." : pinjamanAktif.length}
             subValue="Aktif"
           />
           <StatCard title="Notifikasi" value="1" subValue="Masuk" />
           <StatCard
             title="Riwayat"
-            value={dataPinjaman.length}
+            value={loading ? "..." : dataPinjaman.length}
             subValue="Masuk"
           />
         </section>
@@ -104,57 +107,56 @@ const Home = () => {
 
           <div className="border border-black rounded-lg overflow-hidden shadow-sm mb-4">
             <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse">
+              <table className="w-full text-left border-collapse min-w-[600px]">
                 <thead>
                   <tr className="border-b border-black text-xs md:text-sm font-bold text-gray-700 bg-white">
                     <th className="py-4 px-4 md:px-6">Nama Barang</th>
                     <th className="py-4 px-4 text-center">Jumlah</th>
-                    <th className="py-4 px-4 text-center whitespace-nowrap">
-                      Tanggal Masuk
-                    </th>
+                    <th className="py-4 px-4 text-center">Tanggal Masuk</th>
                     <th className="py-4 px-4 text-center">Tenggat</th>
                     <th className="py-4 px-4 text-center">Status</th>
                   </tr>
                 </thead>
 
                 <tbody className="text-xs md:text-sm text-gray-600">
-                  {displayedData.map((item, index) => (
-                    <tr
-                      key={index}
-                      className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-none"
-                    >
-                      <td className="py-4 md:py-5 px-4 md:px-6 font-medium text-gray-800">
-                        {item.nama}
-                      </td>
-                      <td className="py-4 md:py-5 px-4 text-center">
-                        {item.jumlah}
-                      </td>
-                      <td className="py-4 md:py-5 px-4 text-center">
-                        {item.masuk}
-                      </td>
-                      <td className="py-4 md:py-5 px-4 text-center">
-                        {item.tenggat}
-                      </td>
-                      <td className="py-4 md:py-5 px-4 text-center">
-                        <span
-                          className={`px-3 md:px-4 py-1 rounded-md text-[9px] md:text-[10px] font-bold text-white shadow-sm inline-block whitespace-nowrap ${
-                            item.status === "Aktif"
-                              ? "bg-green-500"
-                              : "bg-orange-400"
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-
-                  {!loading && dataPinjaman.length === 0 && (
+                  {loading ? (
                     <tr>
-                      <td
-                        colSpan="5"
-                        className="text-center py-6 text-gray-400"
+                      <td colSpan="5" className="text-center py-10">Memuat data...</td>
+                    </tr>
+                  ) : displayedData.length > 0 ? (
+                    displayedData.map((item, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-none"
                       >
+                        <td className="py-4 md:py-5 px-4 md:px-6 font-medium text-gray-800">
+                          {item.nama}
+                        </td>
+                        <td className="py-4 md:py-5 px-4 text-center">
+                          {item.jumlah}
+                        </td>
+                        <td className="py-4 md:py-5 px-4 text-center">
+                          {item.masuk}
+                        </td>
+                        <td className="py-4 md:py-5 px-4 text-center">
+                          {item.tenggat}
+                        </td>
+                        <td className="py-4 md:py-5 px-4 text-center">
+                          <span
+                            className={`px-3 md:px-4 py-1 rounded-md text-[9px] md:text-[10px] font-bold text-white shadow-sm inline-block whitespace-nowrap ${
+                              item.status === "Aktif"
+                                ? "bg-green-500"
+                                : "bg-orange-400"
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center py-10 text-gray-400">
                         Tidak ada data pinjaman
                       </td>
                     </tr>
@@ -164,14 +166,19 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="flex justify-end mb-6">
-            <button
-              onClick={() => setShowAll((prev) => !prev)}
-              className="text-[#991B1F] text-xs font-bold hover:underline transition-all"
-            >
-              {showAll ? "Tampilkan Sedikit" : "Lihat Semua"}
-            </button>
-          </div>
+          {/* Tombol Lihat Semua / Sembunyikan */}
+          {!loading && dataPinjaman.length > limit && (
+            <div className="flex justify-end mb-6">
+              <button
+                onClick={() => setShowAll((prev) => !prev)}
+                className="text-[#991B1F] text-xs font-bold hover:underline transition-all"
+              >
+                {showAll 
+                  ? "Tampilkan Sedikit" 
+                  : `Lihat Semua (${dataPinjaman.length} Data)`}
+              </button>
+            </div>
+          )}
         </section>
       </main>
 
@@ -181,7 +188,7 @@ const Home = () => {
 };
 
 // =============================
-// COMPONENT STAT CARD (TIDAK DIUBAH)
+// COMPONENT STAT CARD
 // =============================
 const StatCard = ({ title, value, subValue }) => (
   <div className="bg-[#991B1F] text-white p-4 md:p-5 rounded-lg relative overflow-hidden shadow-md group cursor-pointer active:scale-95 transition-all">
